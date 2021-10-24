@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+  <title>Zhodani Word Generator</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    h1 {
+      font-family: 'Roboto', sans-serif;
+      width: 100%;
+      text-align: center;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .content-container {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    form {
+      margin: 3rem 0;
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .form-field {
+      margin-bottom: 1rem;
+    }
+
+    button {
+      padding: .5rem 1rem;
+      font-size: 1rem;
+      border-radius: 1rem;
+    }
+
+    .word {
+      text-transform: lowercase;
+      margin-top: 3rem;
+    }
+
+    .disclaimer {
+      display: flex;
+      justify-content: center;
+      text-align: left;
+      align-self: center;
+      position: fixed;
+      bottom: 2rem;
+      left: 0;
+      right: 0;
+    }
+
+    .disclaimer-content {
+      width: 70%;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1>Zhodani Word Generator</h1>
+    <div class="content-container">
+
+      <div>
+        <form>
+          <div class="form-field">
+            <label for="num-syllables">No. of Syllables</label>
+            <select id="num-syllables">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+          <button id="generate-btn">Generate</button>
+
+        </form>
+      </div>
+      <div id="word"></div>
+      </div>
+
+      <div class="disclaimer">
+        <div class="disclaimer-content">
+        The Traveller game in all forms is owned by Far Future Enterprises. Copyright 1977 - 2008 Far Future
+        Enterprises. Traveller is a registered trademark of Far Future Enterprises. Far Future permits web sites and
+        fanzines for this game, provided it contains this notice, that Far Future is notified, and subject to a
+        withdrawal of permission on 90 days notice. The contents of this site are for personal, non-commercial use only.
+        Any use of Far Future Enterprises's copyrighted material or trademarks anywhere on this web site and its files
+        should not be viewed as a challenge to those copyrights or trademarks. In addition, any program/articles/file on
+        this site cannot be republished or distributed without the consent of the author who contributed it.
+        </div>
+      </div>
+  </div>
+
+  <script>
+    const basicSyllableList = [
+      ['V', 'V', 'V', 'CV', 'CV', 'CV'],
+      ['VC', 'VC', 'VC', 'VC', 'VC', 'VC'],
+      ['VC', 'VC', 'VC', 'CVC', 'CVC', 'CVC'],
+      ['CVC', 'CVC', 'CVC', 'CVC', 'CVC', 'CVC'],
+      ['CVC', 'CVC', 'CVC', 'CVC', 'CVC', 'CVC'],
+      ['CVC', 'CVC', 'CVC', 'CVC', 'CVC', 'CVC']
+    ];
+
+    const alternateSyllableList = [
+      ['V', 'V', 'V', 'V', 'V', 'V'],
+      ['CV', 'CV', 'CV', 'CV', 'CV', 'CV'],
+      ['VC', 'VC', 'VC', 'VC', 'VC', 'VC'],
+      ['CVC', 'CVC', 'CVC', 'CVC', 'CVC', 'CVC'],
+      ['CVC', 'CVC', 'CVC', 'CVC', 'CVC', 'CVC'],
+      ['CVC', 'CVC', 'CVC', 'CVC', 'CVC', 'CVC']
+    ];
+
+    const phonemes = [
+      [ // row 0
+        [ // Initial Consonant
+          ['B', 'B', 'B', 'B', 'B', 'BL'],
+          ['BL', 'BL', 'BR', 'BR', 'BR', 'BR'],
+          ['BR', 'CH', 'CH', 'CH', 'CH', 'CH'],
+          ['CH', 'CH', 'CH', 'CH', 'CH', 'CH'],
+          ['CH', 'CHT', 'CHT', 'CHT', 'CHT', 'CHT'],
+          ['CHT', 'CHT', 'D', 'D', 'D', 'D']
+        ],
+        [ // Vowel
+          ['A', 'A', 'A', 'A', 'A', 'A'],
+          ['A', 'A', 'A', 'A', 'A', 'A'],
+          ['A', 'A', 'A', 'A', 'A', 'A'],
+          ['A', 'A', 'A', 'A', 'A', 'A'],
+          ['A', 'A', 'A', 'A', 'A', 'A'],
+          ['A', 'A', 'A', 'A', 'A', 'A'],
+        ],
+        [ // Final Consonant
+          ['B', 'B', 'BL', 'BL', 'BL', 'BL'],
+          ['BL', 'BL', 'BL', 'BR', 'BR', 'BR'],
+          ['BR', 'BR', 'BR', 'BR', 'CH', 'CH'],
+          ['CH', 'CH', 'CH', 'D', 'D', 'D'],
+          ['D', 'DL', 'DL', 'DL', 'DL', 'DL'],
+          ['DL', 'DL', 'DR', 'DR', 'DR', 'DR']
+        ]
+      ],
+      [ // row 1
+        [ // Initial Consonant
+          ['D', 'D', 'D', 'D', 'D', 'DL'],
+          ['DL', 'DL', 'DL', 'DL', 'DL', 'DL'],
+          ['DR', 'DR', 'DR', 'DR', 'DR', 'F'],
+          ['F', 'F', 'F', 'F', 'FL', 'FL'],
+          ['FL', 'FR', 'FR', 'FR', 'J', 'J'],
+          ['J', 'J', 'J', 'J', 'J', 'JD']
+        ],
+        [ // Vowel 
+          ['A', 'A', 'A', 'A', 'A', 'A'],
+          ['A', 'A', 'A', 'A', 'A', 'A'],
+          ['A', 'E', 'E', 'E', 'E', 'E'],
+          ['E', 'E', 'E', 'E', 'E', 'E'],
+          ['E', 'E', 'E', 'E', 'E', 'E'],
+          ['E', 'E', 'E', 'E', 'E', 'E']
+        ],
+        [ // Final Consonant
+          ['DR', 'DR', 'DR', 'F', 'F', 'F'],
+          ['F', 'F', 'FL', 'FL', 'FL', 'FL'],
+          ['FL', 'FR', 'FR', 'FR', 'FR', 'FR'],
+          ['J', 'J', 'J', 'J', 'J', 'K'],
+          ['KL', 'KL', 'KL', 'KL', 'KR', 'KR'],
+          ['L', 'L', 'L', 'L', 'L', 'L']
+        ],
+      ],
+      [ // row 2
+        [ // Initial Consonant
+          ['JD', 'JD', 'JD', 'JD', 'K', 'K'],
+          ['K', 'K', 'K', 'KL', 'KL', 'KR'],
+          ['KR', 'L', 'L', 'L', 'M', 'M'],
+          ['N', 'N', 'N', 'N', 'N', 'N'],
+          ['N', 'N', 'P', 'P', 'P', 'P'],
+          ['P', 'P', 'P', 'PL', 'PL', 'PL'],
+        ],
+        [ // Vowel
+          ['E', 'E', 'E', 'E', 'E', 'E'],
+          ['E', 'E', 'E', 'E', 'E', 'E'],
+          ['E', 'E', 'E', 'E', 'E', 'E'],
+          ['E', 'E', 'E', 'E', 'E', 'E'],
+          ['E', 'E', 'E', 'E', 'E', 'E'],
+          ['E', 'E', 'E', 'I', 'I', 'I']
+        ],
+        [ // Final Consonant
+          ['L', 'L', 'L', 'L', 'L', 'L'],
+          ['M', 'M', 'N', 'N', 'NCH', 'NCH'],
+          ['NCH', 'NCH', 'NCH', 'NCH', 'NCH', 'NJ'],
+          ['NJ', 'NJ', 'NJ', 'NJ', 'NS', 'NS'],
+          ['NS', 'NS', 'NS', 'NSH', 'NSH', 'NSH'],
+          ['NSH', 'NSH', 'NSH', 'NSH', 'NT', 'NT']
+        ]
+      ],
+      [ // row 3
+        [ // Initial Consonant
+          ['PL', 'PL', 'PL', 'PL', 'PR', 'PR'],
+          ['PR', 'Q', 'Q', 'QL', 'QL', 'QR'],
+          ['QR', 'R', 'R', 'R', 'R', 'R'],
+          ['S', 'S', 'S', 'S', 'S', 'S'],
+          ['S', 'SH', 'SH', 'SH', 'SH', 'SH'],
+          ['SH', 'SH', 'SHT', 'SHT', 'SHT', 'SHT']
+        ],
+        [ // Vowel
+          ['I', 'I', 'I', 'I', 'I', 'I'],
+          ['I', 'I', 'I', 'I', 'I', 'I'],
+          ['I', 'I', 'I', 'I', 'I', 'I'],
+          ['I', 'I', 'I', 'I', 'I', 'I'],
+          ['I', 'I', 'I', 'I', 'I', 'I'],
+          ['I', 'I', 'IA', 'IA', 'IA', 'IA'],
+        ],
+        [ // Final Consonant
+          ['NT', 'NT', 'NTS', 'NTS', 'NTS', 'NTS'],
+          ['NZ', 'NZ', 'NZ', 'NZ', 'NZ', 'NZH'],
+          ['NZH', 'NZH', 'NZH', 'NZH', 'NZH', 'NZH'],
+          ['P', 'P', 'PL', 'PL', 'PL', 'PL'],
+          ['PL', 'PL', 'PL', 'PR', 'PR', 'PR'],
+          ['PR', 'PR', 'PR', 'PR', 'Q', 'Q']
+        ]
+      ],
+      [ // row 4
+        [ // Initial Consonant
+          ['SHT', 'SHT', 'SHT', 'T', 'T', 'T'],
+          ['T', 'T', 'ST', 'ST', 'ST', 'ST'],
+          ['TL', 'TL', 'TL', 'TL', 'TL', 'TL'],
+          ['TL', 'TL', 'TL', 'TL', 'TL', 'TL'],
+          ['TL', 'TS', 'TS', 'TS', 'V', 'V'],
+          ['V', 'V', 'V', 'VL', 'VL', 'VR']
+        ],
+        [ // Vowel
+          ['IA', 'IA', 'IA', 'IA', 'IA', 'IA'],
+          ['IA', 'IA', 'IA', 'IA', 'IA', 'IA'],
+          ['IA', 'IA', 'IA', 'IA', 'IA', 'IA'],
+          ['IA', 'IA', 'IA', 'IA', 'IA', 'IA'],
+          ['IE', 'IE', 'IE', 'IE', 'IE', 'IE'],
+          ['IE', 'IE', 'IE', 'IE', 'IE', 'IE']
+        ],
+        [ // Final Consonant
+          ['QL', 'QL', 'QR', 'QR', 'R', 'R'],
+          ['R', 'R', 'R', 'SH', 'SH', 'SH'],
+          ['SH', 'SH', 'SH', 'SH', 'T', 'T'],
+          ['T', 'T', 'TS', 'TS', 'TS', 'TS'],
+          ['TS', 'TS', 'TS', 'TL', 'TL', 'TL'],
+          ['TL', 'TL', 'TL', 'TL', 'TL', 'TL']
+        ],
+        [ // row 5
+          [ // Initial Consonant
+            ['VR', 'Y', 'Y', 'Y', 'Z', 'Z'],
+            ['Z', 'Z', 'Z', 'ZD', 'ZD', 'ZD'],
+            ['ZD', 'ZD', 'ZD', 'ZD', 'ZD', 'ZD'],
+            ['ZD', 'ZH', 'ZH', 'ZH', 'ZH', 'ZH'],
+            ['ZH', 'ZH', 'ZHD', 'ZHD', 'ZHD', 'ZHD'],
+            ['ZHD', 'ZHD', 'ZHD', 'ZHD', 'ZHD', 'ZHD']
+          ],
+          [ // Vowel
+            ['IE', 'IE', 'IE', 'IE', 'IE', 'IE'],
+            ['IE', 'IE', 'IE', 'IE', 'IE', 'IE'],
+            ['IE', 'IE', 'IE', 'IE', 'O', 'O'],
+            ['O', 'O', 'O', 'O', 'O', 'O'],
+            ['O', 'O', 'O', 'O', 'O', 'O'],
+            ['R', 'R', 'R', 'R', 'R', 'R'],
+          ],
+          [ // Final Consonant
+            ['V', 'V', 'V', 'V', 'V', 'VL'],
+            ['VL', 'VL', 'VL', 'VR', 'VR', 'VR'],
+            ['VR', 'VR', 'Z', 'Z', 'Z', 'Z'],
+            ['Z', 'Z', 'Z', 'Z', 'Z', 'ZH'],
+            ['ZH', 'ZH', 'ZH', 'ZH', 'ZH', 'ZH'],
+            ['\'', '\'', '\'', '\'', '\'', '\'']
+          ]
+        ]
+      ]
+    ]
+
+    const genWordBtn = document.getElementById('generate-btn');
+    const numSyllables = document.getElementById('num-syllables')
+
+    genWordBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+
+      // determine the word length in syllables
+      let syllables = numSyllables.value;
+
+      // initialize to empty string
+      let lastSyllable = '';
+      let currentSyllable = '';
+
+      let row = 0;
+      let column = 0;
+      let targetWord = '';
+
+      // loop through the syllables
+      for (let i = 0; i < syllables; i++) {
+
+        // get table indices
+        row = rollD6()
+        column = rollD6()
+
+
+        // if first syllable or last syllable ended in a vowel
+        // use basic syllable type table
+        let currentSyllable = (i == 0 || lastSyllable.substring(-1) === 'V') ?
+          basicSyllableList[row][column] :
+          alternateSyllableList[row][column];
+
+        // add the syllable to the word
+        targetWord += getSyllable(lastSyllable, currentSyllable);
+
+        // save the last used syllable
+        lastSyllable = currentSyllable;
+      }
+
+
+
+      document.getElementById('word').innerHTML = targetWord.toLowerCase();
+
+    })
+
+    // helper function - Roll one D6
+    const rollD6 = () => {
+      return Math.floor(Math.random() * 6)
+    }
+
+    const getSyllable = (lastSyllable, currentSyllable) => {
+      let syllable = '';
+
+      let phonemeRow = rollD6();
+
+      for (let i = 0; i < currentSyllable.length; i++) {
+        let row = rollD6();
+        let column = rollD6();
+
+        let str = '';
+
+        if (currentSyllable[i] === 'C') {
+          if (i == 0) {
+            syllable += phonemes[phonemeRow][0][row][column];
+          } else {
+            syllable += phonemes[phonemeRow][2][row][column];
+          }
+        } else {
+          syllable += phonemes[phonemeRow][1][row][column];
+        }
+      }
+
+      return syllable;
+    }
+  </script>
+</body>
+
+</html>
