@@ -1,6 +1,6 @@
 # Zhodani Word Generator
 
-The Zhodani word generator creates words based on the number of desired syllables. The basis of the generator is the Traveller Aliens Module 4 - Zhondani.
+The Zhodani word generator creates words based on the number of desired syllables. The basis of the generator is the Traveller Aliens Module 4 - Zhodani.
 
 ## Usage
 
