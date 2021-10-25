@@ -6,7 +6,7 @@ The Zhodani word generator creates words based on the number of desired syllable
 
 Open the ZhodaniWordGen.html file in a browser.
 
-Select the number of syllables (currently limited to 6, can be expanded upon request).
+Select the number of syllables (maximum of 99).
 
 Press the generate button.
 
